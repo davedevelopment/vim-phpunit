@@ -4,7 +4,7 @@ compiler phpunit
 
 function! RunMake(args)
   let l:sp = &shellpipe
-  let &shellpipe = '2>&1 >'
+  let &shellpipe = '2>&1 > %s; exit ${PIPESTATUS[0]}'
   exec "make! " . a:args
   let &shellpipe = l:sp
 endfunction
@@ -30,6 +30,9 @@ function! JumpToError()
     wincmd p
     redraw!
     return [1, error_message]
+  elseif v:shell_error
+    redraw!
+    return [1, "Non-zero exit"]
   else
     redraw!
     return [0, "All tests passed"]
